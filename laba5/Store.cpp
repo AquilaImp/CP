@@ -23,3 +23,4 @@ void Store::updateDiscount(SaleItem& item, double newDiscount) {
     item.setDiscount(newDiscount);
     cout << "Discount updated. New discounted price: " << item.getDiscountedPrice() << endl;
 }
+//g++ -std=c++11 main.cpp DiscountedItem.cpp Premiumitem.cpp SaleItem.cpp Store.cpp -o store
