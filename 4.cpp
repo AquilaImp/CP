@@ -107,8 +107,15 @@ public:
     bool operator<(const SaleItem& other) const {
         return discountedPrice < other.discountedPrice;
     }
-    friend class Store;
+
+    // Дружественная функция для изменения скидки товара
+    friend void applyDiscount(SaleItem& item, double discount);
 };
+
+// Реализация дружественной функции
+void applyDiscount(SaleItem& item, double discount) {
+    item.setDiscount(discount);  // Изменяем скидку через метод
+}
 
 // Новый класс-наследник от SaleItem
 class DiscountedSaleItem : public SaleItem {
@@ -134,7 +141,10 @@ private:
     static const int MAX_ITEMS = 100;  // Максимальное количество товаров
     Product* items[MAX_ITEMS];         // Массив для хранения товаров
     int count = 0;                     // Счётчик товаров
-
+    void applyDiscount(SaleItem& item, double discount) {
+        item.setDiscount(discount);  // Устанавливаем новый процент скидки
+    }
+    
 public:
     // Метод для отображения меню
     void displayMenu() {
@@ -345,41 +355,40 @@ private:
             cout << "Недостаточно товаров для выполнения операции.\n";
         }
     }
-    
 
-    // Метод для увеличения скидки на товар
+    // Метод для инкремента скидки
     void incrementDiscount() {
         int index;
-        cout << "Введите индекс товара для инкремента скидки: ";
+        cout << "Введите индекс товара для увеличения скидки: ";
         cin >> index;
         index--;  // Снижаем на 1 для корректности индексации
 
         if (index >= 0 && index < count) {
             SaleItem* item = dynamic_cast<SaleItem*>(items[index]);
-            cout << "До инкремента скидки:\n";
-            item->displayInfo();
-            ++(*item);  // Инкремент скидки на товар
-            cout << "После инкремента скидки:\n";
-            item->displayInfo();
+            if (item != nullptr) {
+                ++(*item);  // Увеличиваем скидку на 1%
+                cout << "Скидка увеличена на 1%.\n";
+                item->displayInfo();
+            }
         } else {
             cout << "Некорректный индекс.\n";
         }
     }
 
-    // Метод для уменьшения скидки на товар
+    // Метод для декремента скидки
     void decrementDiscount() {
         int index;
-        cout << "Введите индекс товара для декремента скидки: ";
+        cout << "Введите индекс товара для уменьшения скидки: ";
         cin >> index;
         index--;  // Снижаем на 1 для корректности индексации
 
         if (index >= 0 && index < count) {
             SaleItem* item = dynamic_cast<SaleItem*>(items[index]);
-            cout << "До декремента скидки:\n";
-            item->displayInfo();
-            --(*item);  // Декремент скидки на товар
-            cout << "После декремента скидки:\n";
-            item->displayInfo();
+            if (item != nullptr) {
+                --(*item);  // Уменьшаем скидку на 1%
+                cout << "Скидка уменьшена на 1%.\n";
+                item->displayInfo();
+            }
         } else {
             cout << "Некорректный индекс.\n";
         }
@@ -387,34 +396,40 @@ private:
 
     // Метод для сравнения цен товаров
     void comparePrices() {
-        int index1, index2;
-        cout << "Введите индексы товаров для сравнения: ";
-        cin >> index1 >> index2;
-        index1--; index2--;  // Снижаем на 1 для корректности индексации
+        if (count >= 2) {
+            int index1, index2;
+            cout << "Введите индексы двух товаров для сравнения: ";
+            cin >> index1 >> index2;
+            index1--; index2--;  // Снижаем на 1 для корректности индексации
 
-        if (index1 >= 0 && index1 < count && index2 >= 0 && index2 < count) {
-            SaleItem* item1 = dynamic_cast<SaleItem*>(items[index1]);
-            SaleItem* item2 = dynamic_cast<SaleItem*>(items[index2]);
-            cout << "Товар 1:\n";
-            item1->displayInfo();
-            cout << "Товар 2:\n";
-            item2->displayInfo();
+            if (index1 >= 0 && index1 < count && index2 >= 0 && index2 < count) {
+                SaleItem* item1 = dynamic_cast<SaleItem*>(items[index1]);
+                SaleItem* item2 = dynamic_cast<SaleItem*>(items[index2]);
 
-            if (*item1 < *item2) {
-                cout << "В этом магазине товар дешевле, чем в другом.\n";
+                cout << "Товар 1:\n";
+                item1->displayInfo();
+                cout << "Товар 2:\n";
+                item2->displayInfo();
+
+                if (*item1 < *item2) {
+                    cout << "Товар 1 дешевле товара 2.\n";
+                } else {
+                    cout << "Товар 2 дешевле товара 1.\n";
+                }
             } else {
-                cout << "В другом магазине товар дешевле.\n";
+                cout << "Некорректные индексы.\n";
             }
         } else {
-            cout << "Некорректные индексы.\n";
+            cout << "Недостаточно товаров для выполнения операции.\n";
         }
     }
 };
 
+// Точка входа
 int main() {
-    SetConsoleCP(65001);
-    SetConsoleOutputCP(65001); // Для корректного отображения русских символов в консоли
+    SetConsoleCP(65001);          //Кодировка Ру
+    SetConsoleOutputCP(65001);    
     Store store;
-    store.displayMenu(); // Показать меню
+    store.displayMenu();
     return 0;
 }
