@@ -22,7 +22,7 @@ private:
     void incrementDiscount();          // Скидка+
     void decrementDiscount();          // Скидка-
     void comparePrices();              // <>
-
+    void applyDiscount(SaleItem& item, double discount);
 public:
     Store() = default;
     ~Store();
